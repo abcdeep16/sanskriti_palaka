@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const loc = useLocation();
+  const [open, setOpen] = useState(false);
 
-  // Check login status
   const isAuthenticated = localStorage.getItem("user") !== null;
 
   const handleSignOut = () => {
     localStorage.removeItem("user");
-    window.location.href = "/"; // redirect to home
+    window.location.href = "/";
   };
 
-  // Show Sign In only when user is logged out and NOT on login/register page
   const showSignIn =
     !isAuthenticated &&
     loc.pathname !== "/login" &&
@@ -28,68 +28,104 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="py-6 bg-white/80 backdrop-blur-sm shadow-sm">
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="py-5 bg-white/70 backdrop-blur-lg shadow-sm sticky top-0 z-50"
+    >
       <div className="container mx-auto px-6 flex items-center justify-between">
 
-        {/* BRAND LOGO */}
+        {/* LOGO */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-deepIndigo to-redAccent flex items-center justify-center text-white font-bold text-lg">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-12 h-12 rounded-xl bg-gradient-to-br from-deepIndigo to-redAccent 
+                       flex items-center justify-center text-white font-bold text-lg shadow-md"
+          >
             SP
-          </div>
+          </motion.div>
+
           <div>
-            <div className="text-xl font-semibold text-gray-900">
+            <div className="text-xl font-semibold text-gray-900 tracking-wide">
               Sanskriti Pallaka
             </div>
-            <div className="text-xs text-gray-500 -mt-1">
-              Arts • Music • Food • Travel
-            </div>
+            <div className="text-xs text-gray-500">Arts • Music • Food • Travel</div>
           </div>
         </Link>
 
-        {/* NAVIGATION LINKS */}
-        <nav className="hidden md:flex items-center gap-6">
+        {/* DESKTOP MENU */}
+        <nav className="hidden md:flex items-center gap-8">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className={`text-sm font-medium ${
-                loc.pathname === l.to
-                  ? "text-deepIndigo underline decoration-accentGold/40"
-                  : "text-gray-600 hover:text-deepIndigo"
-              }`}
+              className={`relative text-sm font-medium transition 
+                ${loc.pathname === l.to ? "text-deepIndigo" : "text-gray-600 hover:text-deepIndigo"}
+              `}
             >
               {l.label}
+              {loc.pathname === l.to && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-accentGold rounded"
+                />
+              )}
             </Link>
           ))}
 
-          {/* ⭐ SHOW SIGN-IN BUTTON ⭐ */}
           {showSignIn && (
             <Link
               to="/login"
-              className="ml-4 px-5 py-2 rounded-lg text-sm font-semibold text-white 
-                       bg-gradient-to-br from-deepIndigo to-redAccent shadow-md hover:opacity-90"
+              className="px-5 py-2 rounded-lg text-sm font-semibold text-white 
+                         bg-gradient-to-br from-deepIndigo to-redAccent shadow-md hover:opacity-90"
             >
               Sign In
             </Link>
           )}
 
-          {/* ⭐ SHOW SIGN-OUT BUTTON ⭐ */}
           {isAuthenticated && (
             <button
               onClick={handleSignOut}
-              className="ml-4 px-5 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:opacity-90"
+              className="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:opacity-90"
             >
               Sign Out
             </button>
           )}
         </nav>
 
-        {/* MOBILE NAV */}
-        <div className="md:hidden">
+        {/* MOBILE MENU BUTTON */}
+        <button
+          className="md:hidden p-2 text-gray-700"
+          onClick={() => setOpen(!open)}
+        >
+          ☰
+        </button>
+
+      </div>
+
+      {/* MOBILE DROPDOWN */}
+      {open && (
+        <motion.div
+          initial={{ height: 0 }}
+          animate={{ height: "auto" }}
+          className="md:hidden bg-white/90 backdrop-blur-lg shadow-inner px-6 py-4 space-y-3"
+        >
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              onClick={() => setOpen(false)}
+              className="block text-gray-700 font-medium py-2"
+            >
+              {l.label}
+            </Link>
+          ))}
+
           {showSignIn && (
             <Link
               to="/login"
-              className="px-3 py-2 bg-deepIndigo text-white rounded-lg text-sm"
+              className="block bg-deepIndigo text-white py-2 px-4 rounded-lg mt-3"
             >
               Sign In
             </Link>
@@ -98,13 +134,13 @@ export default function Navbar() {
           {isAuthenticated && (
             <button
               onClick={handleSignOut}
-              className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm"
+              className="block bg-red-600 text-white py-2 px-4 rounded-lg mt-3"
             >
               Sign Out
             </button>
           )}
-        </div>
-      </div>
-    </header>
+        </motion.div>
+      )}
+    </motion.header>
   );
 }

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-brandBg font-poppins text-gray-800;
+  @apply bg-[#f7f2e8] text-gray-800;
 }
 
 /* small visual helpers */

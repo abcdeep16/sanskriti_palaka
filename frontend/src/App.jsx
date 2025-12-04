@@ -18,6 +18,9 @@ import Register from "./pages/Register";
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// Dashboard
+import Dashboard from "./pages/Dashboard";
+
 export default function App() {
   return (
     <Router>
@@ -37,14 +40,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected Example (only if you need it) */}
+          {/* Protected Dashboard */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <div className="section">
-                  <h2 className="text-3xl font-bold">Dashboard</h2>
-                </div>
+                <Dashboard />
               </ProtectedRoute>
             }
           />

@@ -1,0 +1,55 @@
+import axios from 'axios';
+
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add request interceptor to include auth token if available
+api.interceptors.request.use(
+  (config) => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.token) {
+      config.headers.Authorization = `Bearer ${user.token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Authentication API
+export const authAPI = {
+  register: (userData) => api.post('/users/register', userData),
+  login: (credentials) => api.post('/users/login', credentials),
+};
+
+// Crafts API
+export const craftsAPI = {
+  getAll: () => api.get('/crafts'),
+  create: (craftData) => api.post('/crafts', craftData),
+};
+
+// Music API
+export const musicAPI = {
+  getAll: () => api.get('/music'),
+  create: (lessonData) => api.post('/music', lessonData),
+};
+
+// Recipes API
+export const recipesAPI = {
+  getAll: () => api.get('/recipes'),
+  create: (recipeData) => api.post('/recipes', recipeData),
+};
+
+// Tours API
+export const toursAPI = {
+  getAll: () => api.get('/tours'),
+  create: (tourData) => api.post('/tours', tourData),
+};
+
+export default api;
